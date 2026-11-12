@@ -1,0 +1,26 @@
+{
+  "name": "contactos",
+  "version": "1.0.0",
+  "description": "API REST de contactos con Node.js, Express y Mongoose",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "seed": "node db_seed.js"
+  },
+  "keywords": [
+    "express",
+    "mongoose",
+    "rest-api",
+    "contactos"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.8.4"
+  }
+}
+
