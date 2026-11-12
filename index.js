@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import recintosRouter from './routes/recintos.js';
+import eventosRouter from './routes/eventos.js';
 
 // Cargar variables de entorno
 dotenv.config();
@@ -15,6 +16,7 @@ app.use(express.json());
 
 // Rutas
 app.use('/recintos', recintosRouter);
+app.use('/eventos', eventosRouter);
 
 // Conexión a la base de datos MongoDB y puesta en marcha del servidor
 mongoose
