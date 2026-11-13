@@ -19,17 +19,18 @@ app.use('/recintos', recintosRouter);
 app.use('/eventos', eventosRouter);
 
 // Conexión a la base de datos MongoDB y puesta en marcha del servidor
-mongoose
-  .connect(MONGODB_URI)
-  .then(() => {
+const iniciarServidor = async () => {
+  try {
+    await mongoose.connect(MONGODB_URI);
+
     console.log('Conectado a la base de datos MongoDB');
+
     app.listen(PORT, () => {
       console.log(`Servidor en ejecución en el puerto ${PORT}`);
     });
-  })
-  .catch((error) => {
+  } catch (error) {
     console.error('Error al conectar a MongoDB:', error.message);
-  });
+  }
+};
 
-export default app;
-
+iniciarServidor();

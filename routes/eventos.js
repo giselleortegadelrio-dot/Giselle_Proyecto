@@ -52,6 +52,48 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+
+router.get('/entradas/:idEvento/:tipoEntrada', async (req, res) => {
+    try {
+        const { idEvento, tipoEntrada } = req.params;
+
+        const evento = await Evento.findById(idEvento);
+
+        if (!evento) {
+            return res.status(404).json({
+                ok: false,
+                error: `Error obteniendo datos de entrada para evento ${idEvento}`
+            });
+        }
+
+        const entrada = evento.entradas.find(
+            entrada => entrada.tipo === tipoEntrada
+        );
+
+        if (!entrada) {
+            return res.status(404).json({
+                ok: false,
+                error: `Error obteniendo datos de entrada para evento ${idEvento}`
+            });
+        }
+
+        res.status(200).json({
+            ok: true,
+            resultado: {
+                precio: entrada.precio,
+                disponibles: entrada.disponibles
+            }
+        });
+
+    } catch (error) {
+        res.status(404).json({
+            ok: false,
+            error: `Error obteniendo datos de entrada para evento ${req.params.idEvento}`
+        });
+    }
+});
+
+
 // POST /eventos - Añadir un nuevo evento
 router.post('/', async (req, res) => {
   try {
@@ -102,5 +144,65 @@ router.delete('/:id', async (req, res) => {
     res.status(404).json({ ok: false, error: `Error eliminando evento ${req.params.id}` });
   }
 });
+
+
+router.put('/entradas/:idEvento/:tipoEntrada/:cantidad', async (req, res) => {
+    try {
+        const { idEvento, tipoEntrada, cantidad } = req.params;
+
+        // Convertimos la cantidad recibida en la URL a número
+        const cantidadNumerica = Number(cantidad);
+
+        // Comprobamos que sea un entero positivo
+        if (!Number.isInteger(cantidadNumerica) || cantidadNumerica <= 0) {
+            return res.status(404).json({
+                ok: false,
+                error: `Error actualizando entradas del evento ${idEvento}`
+            });
+        }
+
+        // Buscamos el evento por su ID
+        const evento = await Evento.findById(idEvento);
+
+        if (!evento) {
+            return res.status(404).json({
+                ok: false,
+                error: `Error actualizando entradas del evento ${idEvento}`
+            });
+        }
+
+        // Buscamos el tipo de entrada dentro del evento
+        const entrada = evento.entradas.find(
+            entrada => entrada.tipo === tipoEntrada
+        );
+
+        // Comprobamos que exista y que haya suficientes entradas
+        if (!entrada || entrada.disponibles < cantidadNumerica) {
+            return res.status(404).json({
+                ok: false,
+                error: `Error actualizando entradas del evento ${idEvento}`
+            });
+        }
+
+        // Restamos las entradas disponibles
+        entrada.disponibles -= cantidadNumerica;
+
+        // Guardamos los cambios en MongoDB
+        await evento.save();
+
+        // Devolvemos el evento actualizado
+        res.status(200).json({
+            ok: true,
+            resultado: evento
+        });
+
+    } catch (error) {
+        res.status(404).json({
+            ok: false,
+            error: `Error actualizando entradas del evento ${req.params.idEvento}`
+        });
+    }
+});
+
 
 export default router;
